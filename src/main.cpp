@@ -28,9 +28,6 @@ uint8_t currentRoutine = STARTING_ROUTINE;
 
 //Math utility functions
 static long int max(long int a, long int b){
-  return a>b?a:b;
-}
-static long int min(long int a, long int b){
   return a<b?a:b;
 }
 

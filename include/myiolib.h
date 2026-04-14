@@ -87,19 +87,6 @@ inline void initTimer2Millis(void){
   sei();
 }
 
-//this initiates Timer0 PWM for pins 5 and 6.
-inline void initTimer0PWM(void){
-	//Sets Pins 5 and 6 Waveform Generation Mode to Mode 3: Fast PWM
-	//This means that Timer0 starts at 0, counts up to 255, and then resets to 0.
-	TCCR0A = (1 << WGM00) | (1 << WGM01);
-	//Sets the clock select bits to use a prescaler of 64, which gives us a PWM frequency of about 976Hz.
-	TCCR0B = (1 << CS01) | (1 << CS00);
-}
-inline void initTimer1Servo50Hz(void){
-  //Put Servo code in here when I get to it.
-}
-
-
 inline bool myDigitalRead(const PinStruct target){
   return *target.pin & (1 << target.bit);
 }
@@ -122,4 +109,32 @@ inline void enablePWM(const PinStruct target){
 }
 inline void disablePWM(const PinStruct target){
     *target.PWMData.timer &= ~(1 << target.PWMData.modeBit);
+}
+
+
+//this initiates Timer0 PWM for pins 5 and 6.
+inline void initTimer0PWM(void){
+	//Sets Pins 5 and 6 Waveform Generation Mode to Mode 3: Fast PWM
+	//This means that Timer0 starts at 0, counts up to 255, and then resets to 0.
+	TCCR0A = (1 << WGM00) | (1 << WGM01);
+	//Sets the clock select bits to use a prescaler of 64, which gives us a PWM frequency of about 976Hz.
+	TCCR0B = (1 << CS01) | (1 << CS00);
+}
+//This initiates Timer1 for 50Hz servo control.
+inline void initTimer1Servo50Hz(void){
+	DDRB |= (1 << 1) | (1 << 2); //Set pins 9 and 10 as outputs for servo control
+
+	//Does something that's necessary to make the timers work.
+	TCCR1A = (1 << WGM11);
+	TCCR1B = (1 << WGM13) | (1 << WGM12);
+
+	//Sets the TOP value for 50Hz
+	ICR1 = 39999;
+
+	//Sets the prescaler to 8
+	TCCR1B |= (1 << CS11);
+
+	OCR1A = 3400; //Initial pulse width for servo on pin 9 (1.5ms pulse)
+	OCR1B = 3400; //Initial pulse width for servo on pin 10 (1.5ms pulse)
+
 }
