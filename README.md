@@ -1,0 +1,1 @@
+This is my first time doing baremetal coding outside of Arduino IDE. This program contains a 5-state FSM that is incremented by a button press that cycles through various blinking routines for two LEDs. It uses myiolib, a custom library for baremetal direct port manipulation for AVR that I am developing.
