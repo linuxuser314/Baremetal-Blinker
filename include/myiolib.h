@@ -23,29 +23,39 @@
 #include <avr/interrupt.h>
 
 //Necessary for setting up pins
-struct PinStruct{
-  volatile uint8_t* port;
-  volatile uint8_t* ddr;
-  volatile uint8_t* pin;
-  uint8_t bit;
-  struct PWMStruct PWMData;
-};
-
 struct PWMStruct{
   uint8_t modeBit;
   volatile uint8_t* timer;
   volatile uint8_t* PWMPtr;
 };
-/*
-constexpr PinStruct PIN_13 = {&PORTB, &DDRB, &PINB, 5, false, 0, nullptr, nullptr};
-constexpr PinStruct PIN_5 = {&PORTD, &DDRD, &PIND, 5, true, COM0B1, &TCCR0A, &OCR0B};
-constexpr PinStruct PIN_6 = {&PORTD, &DDRD, &PIND, 6, true, COM0A1, &TCCR0A, &OCR0A};
-*/
+struct PinStruct{
+  volatile uint8_t* port;
+  volatile uint8_t* ddr;
+  volatile uint8_t* pin;
+  uint8_t bit;
+  PWMStruct PWMData;
+};
 
+
+//Placeholder
 constexpr PWMStruct NO_PWM = {0, nullptr, nullptr};
-constexpr PinStruct PIN_13 = {&PORTB, &DDRB, &PINB, 5, NO_PWM};
+
+//This is where I will define the pin constants. I am using the PinStruct to store all necessary information about each pin in one place, which should make it easier to write generic functions for pin manipulation and PWM control.
+//I do not have PWM set up for all pins just yet.
+constexpr PinStruct PIN_0 = {&PORTD, &DDRD, &PIND, 0, NO_PWM};
+constexpr PinStruct PIN_1 = {&PORTD, &DDRD, &PIND, 1, NO_PWM};
+constexpr PinStruct PIN_2 = {&PORTD, &DDRD, &PIND, 2, NO_PWM};
+constexpr PinStruct PIN_3 = {&PORTD, &DDRD, &PIND, 3, NO_PWM};
+constexpr PinStruct PIN_4 = {&PORTD, &DDRD, &PIND, 4, NO_PWM};
 constexpr PinStruct PIN_5 = {&PORTD, &DDRD, &PIND, 5, {COM0B1, &TCCR0A, &OCR0B}};
 constexpr PinStruct PIN_6 = {&PORTD, &DDRD, &PIND, 6, {COM0A1, &TCCR0A, &OCR0A}};
+constexpr PinStruct PIN_7 = {&PORTD, &DDRD, &PIND, 7, NO_PWM};
+constexpr PinStruct PIN_8 = {&PORTB, &DDRB, &PINB, 0, NO_PWM};
+constexpr PinStruct PIN_9 = {&PORTB, &DDRB, &PINB, 1, NO_PWM};
+constexpr PinStruct PIN_10 = {&PORTB, &DDRB, &PINB, 2, NO_PWM};
+constexpr PinStruct PIN_11 = {&PORTB, &DDRB, &PINB, 3, NO_PWM};
+constexpr PinStruct PIN_12 = {&PORTB, &DDRB, &PINB, 4, NO_PWM}; 
+constexpr PinStruct PIN_13 = {&PORTB, &DDRB, &PINB, 5, NO_PWM};
 
 constexpr uint8_t ON = 1;
 constexpr uint8_t OFF = 0;
@@ -64,7 +74,7 @@ inline unsigned long myMillis(void){
   sei();
   return time;
 }
-inline void initMillis(void){
+inline void initTimer2Millis(void){
   //Inititate Timer2 for myMillis()
   TCCR2A = (1 << WGM21);
   TCCR2B = (1 << CS22);
@@ -76,11 +86,14 @@ inline void initMillis(void){
 
 //this initiates Timer0 PWM for pins 5 and 6.
 inline void initTimer0PWM(void){
-  //This sets pins 5 and 6 (D5 and D6) to OUTPUT and 13 (B5) to INPUT
-  //Sets Pin 1 to connect to timer and any necessary WGM bits
+  //Sets Pin 1 to connect to timer and necessary WGM bits
   TCCR0A = (1 << WGM00) | (1 << WGM01);
   TCCR0B = (1 << CS01) | (1 << CS00);
 }
+inline void initTimer1Servo50Hz(void){
+  //Put Servo code in here when I get to it.
+}
+
 
 inline bool myDigitalRead(const PinStruct target){
   return *target.pin & (1 << target.bit);
@@ -93,7 +106,6 @@ inline void myPinMode(const PinStruct target, bool mode){
   else{
     *target.ddr &= ~(1 << target.bit);
   }
-
 }
 
 inline void myDigitalWrite(const PinStruct target, bool level){
@@ -106,8 +118,8 @@ inline void myDigitalWrite(const PinStruct target, bool level){
 }
 inline void myAnalogWrite(const PinStruct target, uint8_t level){
     *target.PWMData.PWMPtr = level;
-    *target.PWMData.timer |= (1 << target.PWMData.modeBit);
 }
+
 inline void enablePWM(const PinStruct target){
     *target.PWMData.timer |= (1 << target.PWMData.modeBit);
 }

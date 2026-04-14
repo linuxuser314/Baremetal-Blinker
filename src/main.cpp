@@ -171,7 +171,8 @@ int main(void){
 
   //Starts the timers for PWM and myMillis()
   initTimer0PWM();
-  initMillis();
+  initTimer2Millis();
+  initTimer1Servo50Hz();
 
   //Initializing Pins:
   myPinMode(LED_1, OUT);
