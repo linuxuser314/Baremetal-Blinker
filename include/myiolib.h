@@ -65,28 +65,6 @@ constexpr uint8_t OFF = 0;
 constexpr uint8_t IN = 0;
 constexpr uint8_t OUT = 1;
 
-//defines the functions necessary for setting up, running, and updating myMillis().
-volatile unsigned long systemMillis = 0;
-ISR(TIMER2_COMPA_vect){
-  systemMillis ++;
-}
-inline unsigned long myMillis(void){
-  unsigned long time;
-  cli();
-  time = systemMillis;
-  sei();
-  return time;
-}
-inline void initTimer2Millis(void){
-  //Inititate Timer2 for myMillis()
-  TCCR2A = (1 << WGM21);
-  TCCR2B = (1 << CS22);
-  OCR2A = 249;
-  TIMSK2 = (1 << OCIE2A);
-
-  sei();
-}
-
 inline bool myDigitalRead(const PinStruct target){
   return *target.pin & (1 << target.bit);
 }
@@ -112,6 +90,37 @@ inline void disablePWM(const PinStruct target){
 }
 
 
+inline void drive(int8_t left, int8_t right){
+	//Drives the robot so that at 1.3ms the motors are still
+	//then we add/sub a number between [-100,100] to control the speed of the motors between 1.3ms and 1.7ms
+	OCR1A = 3000 + (uint16_t)left * 4;
+	OCR1B = 3000 - (uint16_t)right * 4;
+}
+
+
+//defines the functions necessary for setting up, running, and updating myMillis().
+volatile unsigned long systemMillis = 0;
+ISR(TIMER2_COMPA_vect){
+  systemMillis ++;
+}
+inline unsigned long myMillis(void){
+  unsigned long time;
+  cli();
+  time = systemMillis;
+  sei();
+  return time;
+}
+inline void initTimer2Millis(void){
+  //Inititate Timer2 for myMillis()
+  TCCR2A = (1 << WGM21);
+  TCCR2B = (1 << CS22);
+  OCR2A = 249;
+  TIMSK2 = (1 << OCIE2A);
+
+  sei();
+}
+
+
 //this initiates Timer0 PWM for pins 5 and 6.
 inline void initTimer0PWM(void){
 	//Sets Pins 5 and 6 Waveform Generation Mode to Mode 3: Fast PWM
@@ -123,8 +132,8 @@ inline void initTimer0PWM(void){
 //This initiates Timer1 for 50Hz servo control.
 inline void initTimer1Servo50Hz(void){
 
-
-	DDRB |= (1 << 1) | (1 << 2); //Set pins 9 and 10 as outputs for servo control
+	myPinMode(PIN_9, OUT);
+	myPinMode(PIN_10, OUT);
 
 	//Setting the Waveform Generation Module to Mode 14: Fast PWM with ICR1 as TOP.
 	//This allows us to set a custom TOP value for a specific PWM frequency, which is necessary for accurate servo control.
@@ -148,9 +157,7 @@ inline void initTimer1Servo50Hz(void){
 
 }
 
-inline void drive(int8_t left, int8_t right){
-	//Drives the robot so that at 1.3ms the motors are still
-	//then we add/sub a number between [-100,100] to control the speed of the motors between 1.3ms and 1.7ms
-	OCR1A = 3000 + left * 4;
-	OCR1B = 3000 - right * 4;
-}
+
+
+
+
