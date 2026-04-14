@@ -43,18 +43,19 @@ constexpr uint8_t OFF = 0;
 constexpr uint8_t IN = 0;
 constexpr uint8_t OUT = 1;
 
+//defines the functions necessary for setting up, running, and updating myMillis().
 volatile unsigned long systemMillis = 0;
-
 ISR(TIMER2_COMPA_vect){
   systemMillis ++;
 }
-
-inline void initHardware(void){
-  //This sets pins 5 and 6 (D5 and D6) to OUTPUT and 13 (B5) to INPUT
-  //Sets Pin 1 to connect to timer and any necessary WGM bits
-  TCCR0A = (1 << WGM00) | (1 << WGM01);
-  TCCR0B = (1 << CS01) | (1 << CS00);
-
+inline unsigned long myMillis(void){
+  unsigned long time;
+  cli();
+  time = systemMillis;
+  sei();
+  return time;
+}
+inline void initMillis(void){
   //Inititate Timer2 for myMillis()
   TCCR2A = (1 << WGM21);
   TCCR2B = (1 << CS22);
@@ -62,6 +63,15 @@ inline void initHardware(void){
   TIMSK2 = (1 << OCIE2A);
 
   sei();
+}
+
+
+
+inline void initTimer0PWM(void){
+  //This sets pins 5 and 6 (D5 and D6) to OUTPUT and 13 (B5) to INPUT
+  //Sets Pin 1 to connect to timer and any necessary WGM bits
+  TCCR0A = (1 << WGM00) | (1 << WGM01);
+  TCCR0B = (1 << CS01) | (1 << CS00);
 }
 
 inline bool myDigitalRead(const PinStruct target){
@@ -96,10 +106,3 @@ inline void myAnalogWrite(const PinStruct target, uint8_t level){
   }
 }
 
-inline unsigned long myMillis(void){
-  unsigned long time;
-  cli();
-  time = systemMillis;
-  sei();
-  return time;
-}

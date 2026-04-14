@@ -1,4 +1,5 @@
-//main Non_blocking_analog_blinker.ino
+//main.cpp
+//
 
 //This program is a multi-state blinker/fader/flickerer utilizing non-blocking code.
 
@@ -44,7 +45,7 @@ static bool checkForButtonPress(const PinStruct pin) {
   //The static keyword makes this variable state persistent across all function calls.
   static bool buttonIsPressed = false;
 
-  bool buttonVal = myDigitalRead(pin);
+  bool buttonVal = !myDigitalRead(pin);
 
   //This checks if the button is pressed and it was not previously pressed, update buttonIsPressed and returns 1.
   if (buttonVal && !buttonIsPressed) {
@@ -169,12 +170,15 @@ static void tickingTimeBombBlink(){
 int main(void){
 
   //Starts the timers for PWM and myMillis()
-  initHardware();
+  initTimer0PWM();
+  initMillis();
 
   //Initializing Pins:
   myPinMode(LED_1, OUT);
   myPinMode(LED_2, OUT);
-  myPinMode(BUTTON, OUT);
+  myPinMode(BUTTON, IN);
+  myDigitalWrite(BUTTON, ON); //turn on pull-up resistor for button pin. (IntelliCode suggested this comment before I had even typed it! Currently this is just a shortcut, I'll add a function later).
+
 
   //an infinite loop that allows the contents to be executed indefinitely.
   while(true){
