@@ -100,21 +100,13 @@ inline bool myDigitalRead(const PinStruct target){
 }
 
 inline void myPinMode(const PinStruct target, bool mode){
-  if(mode){
-    *target.ddr |= (1 << target.bit);
-  }
-  else{
-    *target.ddr &= ~(1 << target.bit);
-  }
+  if(mode)	*target.ddr |= (1 << target.bit);
+  else	*target.ddr &= ~(1 << target.bit);
 }
 
 inline void myDigitalWrite(const PinStruct target, bool level){
-  if(level){
-    *target.port |= (1 << target.bit);
-  }
-  else{
-    *target.port &= ~(1 << target.bit);
-  }
+  if(level)	*target.port |= (1 << target.bit);
+  else  *target.port &= ~(1 << target.bit);
 }
 inline void myAnalogWrite(const PinStruct target, uint8_t level){
     *target.PWMData.PWMPtr = level;
