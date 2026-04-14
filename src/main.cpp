@@ -210,7 +210,13 @@ int main(void){
     if(currentRoutine == 4){
       //Initiates the time bomb start so that it starts fresh every time
       timeBombStart = myMillis();
+	  disablePWM(LED_1);
+	  disablePWM(LED_2);
     }
+	else if(currentRoutine == 3){
+		enablePWM(LED_1);
+		enablePWM(LED_2);
+	}
     
   }
   }

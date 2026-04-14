@@ -65,14 +65,14 @@ inline void initMillis(void){
   sei();
 }
 
-
-
+//this initiates Timer0 PWM for pins 5 and 6.
 inline void initTimer0PWM(void){
   //This sets pins 5 and 6 (D5 and D6) to OUTPUT and 13 (B5) to INPUT
   //Sets Pin 1 to connect to timer and any necessary WGM bits
   TCCR0A = (1 << WGM00) | (1 << WGM01);
   TCCR0B = (1 << CS01) | (1 << CS00);
 }
+
 
 inline bool myDigitalRead(const PinStruct target){
   return *target.pin & (1 << target.bit);
@@ -89,9 +89,6 @@ inline void myPinMode(const PinStruct target, bool mode){
 }
 
 inline void myDigitalWrite(const PinStruct target, bool level){
-  if(target.isPWM){
-    *target.timer &= ~(1 << target.modeBit);
-  }
   if(level){
     *target.port |= (1 << target.bit);
   }
@@ -105,4 +102,9 @@ inline void myAnalogWrite(const PinStruct target, uint8_t level){
     *target.timer |= (1 << target.modeBit);
   }
 }
-
+inline void enablePWM(const PinStruct target){
+    *target.timer |= (1 << target.modeBit);
+}
+inline void disablePWM(const PinStruct target){
+    *target.timer &= ~(1 << target.modeBit);
+}
