@@ -148,9 +148,9 @@ inline void initTimer1Servo50Hz(void){
 
 }
 
-inline void drive(uint8_t left, uint8_t right){
+inline void drive(int8_t left, int8_t right){
 	//Drives the robot so that at 1.3ms the motors are still
 	//then we add/sub a number between [-100,100] to control the speed of the motors between 1.3ms and 1.7ms
-	OCR1A = 3000 + (uint16_t)left * 4;
-	OCR1B = 3000 - (uint16_t)right * 4;
+	OCR1A = 3000 + left * 4;
+	OCR1B = 3000 - right * 4;
 }
