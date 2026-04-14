@@ -1,7 +1,7 @@
 
 //myiolib.h
 //This library was created by Creed Truman. This is my first version in VSCode!
-//This version was last updated on 4/13/2026.
+//This version was last updated on 4/14/2026.
 
 //Credit to Google Gemini for helping me debug and optimize the code, for explaining AVR architecture, and helping me get started with VSCode.
 
@@ -11,10 +11,6 @@
 //It is not fully functional by any means.
 
 //TODO:
-//Fully define all pins
-//Seperate the digital and analog write functions with enable/disable PWM functions to reduce overhead
-//Clean up the code and comments
-//Add servo control functions
 //Add serial IO functions
 
 //This is necessary for IO port definitions, interrupt handling, and uint8_t
@@ -87,10 +83,14 @@ inline void disablePWM(const PinStruct target){
     *target.PWMData.timer &= ~(1 << target.PWMData.modeBit);
 }
 
-
+//Primary robot drive function
 inline void drive(int8_t left, int8_t right){
-	//Drives the robot so that at 1.3ms the motors are still
-	//then we add/sub a number between [-100,100] to control the speed of the motors between 1.3ms and 1.7ms
+	//Drives the robot.
+	//It starts by taking 3000 (1.5ms).
+	//Then it takes the left and right variables (which range from -100 to 100) and multiplies them by 4.
+	//This gives us a range from -400 to 400.
+	//Adding them to the 3000 gives us a range from 2600 to 3400, or 1.3ms to 1.7ms to control the servos.
+	//The right motor is reversed because of the way it is oriented on the robot.
 	OCR1A = 3000 + (uint16_t)left * 4;
 	OCR1B = 3000 - (uint16_t)right * 4;
 }
