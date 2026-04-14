@@ -23,18 +23,14 @@ constexpr uint8_t STARTING_ROUTINE = 0;
 //This global variable keeps up with the start time of the time bomb blink
 unsigned long int timeBombStart = 0;
 
-//Used by the random time interval blink feature.
-uint16_t randomLength1 = 0;
-uint16_t randomLength2 = 0;
-
 //This is the FSM counter variable.
 uint8_t currentRoutine = STARTING_ROUTINE;
 
 //Math utility functions
-long int max(long int a, long int b){
+static long int max(long int a, long int b){
   return a>b?a:b;
 }
-long int min(long int a, long int b){
+static long int min(long int a, long int b){
   return a<b?a:b;
 }
 

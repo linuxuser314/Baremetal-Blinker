@@ -36,12 +36,14 @@ struct PinStruct{
   PWMStruct PWMData;
 };
 
+//Bit Bucket
+uint8_t bitBucket = 0;
 
 //Placeholder
-constexpr PWMStruct NO_PWM = {0, nullptr, nullptr};
+constexpr PWMStruct NO_PWM = {0, &bitBucket, &bitBucket};
 
 //This is where I will define the pin constants. I am using the PinStruct to store all necessary information about each pin in one place, which should make it easier to write generic functions for pin manipulation and PWM control.
-//I do not have PWM set up for all pins just yet.
+//I do not have PWM set up for all pins just yet, so I am using the NO_PWM for those pins (3, 9, 10, 11).
 constexpr PinStruct PIN_0 = {&PORTD, &DDRD, &PIND, 0, NO_PWM};
 constexpr PinStruct PIN_1 = {&PORTD, &DDRD, &PIND, 1, NO_PWM};
 constexpr PinStruct PIN_2 = {&PORTD, &DDRD, &PIND, 2, NO_PWM};
@@ -57,6 +59,7 @@ constexpr PinStruct PIN_11 = {&PORTB, &DDRB, &PINB, 3, NO_PWM};
 constexpr PinStruct PIN_12 = {&PORTB, &DDRB, &PINB, 4, NO_PWM}; 
 constexpr PinStruct PIN_13 = {&PORTB, &DDRB, &PINB, 5, NO_PWM};
 
+//These are just constants for readability and convenience.
 constexpr uint8_t ON = 1;
 constexpr uint8_t OFF = 0;
 constexpr uint8_t IN = 0;
@@ -86,9 +89,11 @@ inline void initTimer2Millis(void){
 
 //this initiates Timer0 PWM for pins 5 and 6.
 inline void initTimer0PWM(void){
-  //Sets Pin 1 to connect to timer and necessary WGM bits
-  TCCR0A = (1 << WGM00) | (1 << WGM01);
-  TCCR0B = (1 << CS01) | (1 << CS00);
+	//Sets Pins 5 and 6 Waveform Generation Mode to Mode 3: Fast PWM
+	//This means that Timer0 starts at 0, counts up to 255, and then resets to 0.
+	TCCR0A = (1 << WGM00) | (1 << WGM01);
+	//Sets the clock select bits to use a prescaler of 64, which gives us a PWM frequency of about 976Hz.
+	TCCR0B = (1 << CS01) | (1 << CS00);
 }
 inline void initTimer1Servo50Hz(void){
   //Put Servo code in here when I get to it.
