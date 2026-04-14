@@ -2,8 +2,12 @@
 //
 
 //This program is a multi-state blinker/fader/flickerer utilizing non-blocking code.
+//It is designed to run on an AVR microcontroller (specifically an ATmega328P) and directly manipulates the hardware registers for efficient performance.
+//It also includes a simple FSM (finite state machine) to switch between different blinking patterns and a simple drive function for controlling two motors (intended for a small robot) using PWM signals. 
+//I started with the blinker and then added the drive function, so it is a little bit weird and impractical.
+//This project was for Sudeepa Pathak's EGR-150-AF01 class at College of the Albemarle
 
-//Created by Creed Truman, 4/1/2026
+//Created by Creed Truman, 4/14/2026
 //Thanks to Uri Shaked's tutorial for inspiration for non-blocking LED blinking. No code was reused.
 //https://blog.wokwi.com/5-ways-to-blink-an-led-with-arduino/
 //Additional credit goes to Google Gemini for pointing out bugs before they became a problem (namely datatype mismatches and potential overflows) and giving general recommendations (My C was a little rusty).
@@ -30,7 +34,7 @@ uint8_t currentRoutine = STARTING_ROUTINE;
 
 //Math utility functions
 static long int max(long int a, long int b){
-  return a<b?a:b;
+  return a>b?a:b;
 }
 
 //Returns 1 on the rising edge of the button press; otherwise returns 0.
@@ -178,10 +182,7 @@ int main(void){
 
   //an infinite loop that allows the contents to be executed indefinitely.
   while(true){
-    if(myMillis() - temporaryTimer >= 4000){
-      currentRoutine ++;
-      temporaryTimer = myMillis();
-    }
+   
     //This is the FSM state selector.
     switch (currentRoutine) {
       case (0):
