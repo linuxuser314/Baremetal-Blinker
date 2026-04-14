@@ -122,19 +122,35 @@ inline void initTimer0PWM(void){
 }
 //This initiates Timer1 for 50Hz servo control.
 inline void initTimer1Servo50Hz(void){
+
+
 	DDRB |= (1 << 1) | (1 << 2); //Set pins 9 and 10 as outputs for servo control
 
-	//Does something that's necessary to make the timers work.
+	//Setting the Waveform Generation Module to Mode 14: Fast PWM with ICR1 as TOP.
+	//This allows us to set a custom TOP value for a specific PWM frequency, which is necessary for accurate servo control.
 	TCCR1A = (1 << WGM11);
 	TCCR1B = (1 << WGM13) | (1 << WGM12);
 
 	//Sets the TOP value for 50Hz
 	ICR1 = 39999;
 
-	//Sets the prescaler to 8
+	//Sets the prescaler to 8 so that it only increments the timer every 8 clock cycles
+	//This, combined with the TOP value, gives us a PWM frequency of 50Hz, which is standard for servo control.
 	TCCR1B |= (1 << CS11);
 
-	OCR1A = 3400; //Initial pulse width for servo on pin 9 (1.5ms pulse)
-	OCR1B = 3400; //Initial pulse width for servo on pin 10 (1.5ms pulse)
+	//We need to set the Compare Output Mode (COM) bits to enable the multiplexer to select PWM instead of Digital.
+	//This is equivalent to enablePWM
+	TCCR1A |= (1 << COM1A1) | (1 << COM1B1);
 
+	//Set the motors to be stopped initially (1.5ms pulse)
+	OCR1A = 3000;
+	OCR1B = 3000; 
+
+}
+
+inline void drive(uint8_t left, uint8_t right){
+	//Drives the robot so that at 1.3ms the motors are still
+	//then we add/sub a number between [-100,100] to control the speed of the motors between 1.3ms and 1.7ms
+	OCR1A = 3000 + (uint16_t)left * 4;
+	OCR1B = 3000 - (uint16_t)right * 4;
 }

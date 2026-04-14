@@ -20,6 +20,8 @@ constexpr PinStruct BUTTON = PIN_13;
 //This is the startup state of the FSM (primarily used for rapid prototyping of new routines)
 constexpr uint8_t STARTING_ROUTINE = 0;
 
+uint32_t temporaryTimer = 0; //This is a temporary timer variable used for timing the FSM state changes. I will likely replace this with a more robust solution later, but it works for now.
+
 //This global variable keeps up with the start time of the time bomb blink
 unsigned long int timeBombStart = 0;
 
@@ -176,23 +178,31 @@ int main(void){
 
   //an infinite loop that allows the contents to be executed indefinitely.
   while(true){
-
+    if(myMillis() - temporaryTimer >= 4000){
+      currentRoutine ++;
+      temporaryTimer = myMillis();
+    }
     //This is the FSM state selector.
     switch (currentRoutine) {
       case (0):
         blink1();//Simple alternating blink
+        drive(100,100);
         break;
       case (1):
         blink2();//Fun alarm blink
+        drive(-100,-100);
         break;
       case (2):
         blink3();//Crazy blink
+        drive(100,0);
         break;
       case (3):
         fade1();//Alternating fade-in fade-out.
+        drive(0,-100);
         break;
       case(4):
         tickingTimeBombBlink();//Starts slow, speeds up, turns on, off, and resets.
+        drive(0, 100);
         break;
       default:
         currentRoutine = 0;  //resets the FSM when it reaches the end or if something goes wrong.
