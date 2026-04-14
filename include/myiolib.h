@@ -28,15 +28,24 @@ struct PinStruct{
   volatile uint8_t* ddr;
   volatile uint8_t* pin;
   uint8_t bit;
-  bool isPWM;
+  struct PWMStruct PWMData;
+};
+
+struct PWMStruct{
   uint8_t modeBit;
   volatile uint8_t* timer;
   volatile uint8_t* PWMPtr;
 };
-
+/*
 constexpr PinStruct PIN_13 = {&PORTB, &DDRB, &PINB, 5, false, 0, nullptr, nullptr};
 constexpr PinStruct PIN_5 = {&PORTD, &DDRD, &PIND, 5, true, COM0B1, &TCCR0A, &OCR0B};
 constexpr PinStruct PIN_6 = {&PORTD, &DDRD, &PIND, 6, true, COM0A1, &TCCR0A, &OCR0A};
+*/
+
+constexpr PWMStruct NO_PWM = {0, nullptr, nullptr};
+constexpr PinStruct PIN_13 = {&PORTB, &DDRB, &PINB, 5, NO_PWM};
+constexpr PinStruct PIN_5 = {&PORTD, &DDRD, &PIND, 5, {COM0B1, &TCCR0A, &OCR0B}};
+constexpr PinStruct PIN_6 = {&PORTD, &DDRD, &PIND, 6, {COM0A1, &TCCR0A, &OCR0A}};
 
 constexpr uint8_t ON = 1;
 constexpr uint8_t OFF = 0;
@@ -73,7 +82,6 @@ inline void initTimer0PWM(void){
   TCCR0B = (1 << CS01) | (1 << CS00);
 }
 
-
 inline bool myDigitalRead(const PinStruct target){
   return *target.pin & (1 << target.bit);
 }
@@ -97,14 +105,12 @@ inline void myDigitalWrite(const PinStruct target, bool level){
   }
 }
 inline void myAnalogWrite(const PinStruct target, uint8_t level){
-  if(target.isPWM){
-    *target.PWMPtr = level;
-    *target.timer |= (1 << target.modeBit);
-  }
+    *target.PWMData.PWMPtr = level;
+    *target.PWMData.timer |= (1 << target.PWMData.modeBit);
 }
 inline void enablePWM(const PinStruct target){
-    *target.timer |= (1 << target.modeBit);
+    *target.PWMData.timer |= (1 << target.PWMData.modeBit);
 }
 inline void disablePWM(const PinStruct target){
-    *target.timer &= ~(1 << target.modeBit);
+    *target.PWMData.timer &= ~(1 << target.PWMData.modeBit);
 }
