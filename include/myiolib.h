@@ -36,11 +36,9 @@ struct PinStruct{
   PWMStruct PWMData;
 };
 
-//Bit Bucket
-uint8_t bitBucket = 0;
 
 //Placeholder
-constexpr PWMStruct NO_PWM = {0, &bitBucket, &bitBucket};
+constexpr PWMStruct NO_PWM = {0, nullptr, nullptr};
 
 //This is where I will define the pin constants. I am using the PinStruct to store all necessary information about each pin in one place, which should make it easier to write generic functions for pin manipulation and PWM control.
 //I do not have PWM set up for all pins just yet, so I am using the NO_PWM for those pins (3, 9, 10, 11).
