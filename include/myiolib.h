@@ -1,12 +1,22 @@
 
 //myiolib.h
+//This library was created by Creed Truman. This is my first version in VSCode!
+//This version was last updated on 4/13/2026.
 
-long int max(long int a, long int b){
-  return a>b?a:b;
-}
-long int min(long int a, long int b){
-  return a<b?a:b;
-}
+//Credit to Google Gemini for helping me debug and optimize the code, for explaining AVR architecture, and helping me get started with VSCode.
+
+
+//This library is designed to provide basic IO functions, pin definitions, and timer setup for AVR microcontrollers.
+//It is one of my first attemps at writing a C library.
+//It is not fully functional by any means.
+
+//TODO:
+//Fully define all pins
+//Seperate the digital and analog write functions with enable/disable PWM functions to reduce overhead
+//Clean up the code and comments
+//Add servo control functions
+//Add serial IO functions
+
 //This is necessary for IO port definitions, interrupt handling, and uint8_t
 #include <avr/io.h>
 #include <stdint.h>

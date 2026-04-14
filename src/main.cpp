@@ -8,13 +8,9 @@
 //Additional credit goes to Google Gemini for pointing out bugs before they became a problem (namely datatype mismatches and potential overflows) and giving general recommendations (My C was a little rusty).
 //Additional credit for explaining the functionality of the AVR architecture and bare-metal features for direct port manipulation and timer setup.
 
-//My custom library for pin IO
-//#include "myiolib.h"
-
-//I just copied and pasted my library here to avoid having to share multiple files.
-
-
+//custom library for IO functions, pin definitions, and timer setup.
 #include "myiolib.h"
+
 //Global constants for pin numbers
 constexpr PinStruct LED_1 = PIN_5;
 constexpr PinStruct LED_2 = PIN_6;
@@ -32,6 +28,14 @@ uint16_t randomLength2 = 0;
 
 //This is the FSM counter variable.
 uint8_t currentRoutine = STARTING_ROUTINE;
+
+//Math utility functions
+long int max(long int a, long int b){
+  return a>b?a:b;
+}
+long int min(long int a, long int b){
+  return a<b?a:b;
+}
 
 //Returns 1 on the rising edge of the button press; otherwise returns 0.
 static bool checkForButtonPress(const PinStruct pin) {
@@ -55,19 +59,6 @@ static bool checkForButtonPress(const PinStruct pin) {
   //End the function and return 0 if the button was not being pressed.
   return 0;
 
-}
-
-//Blinks an LED at pin for duration milliseconds; inverts the state if isInverted is true.
-static void blinkLED(const PinStruct pin, unsigned long duration, bool isInverted) {
-  //This function takes in three values: a pin number, a duration, and a state.
-  //It turns the pin on or off depending on whether the time ellapsed divided by the duration is even or odd, effectively blinking the light over the duration.
-  //Finally, a state input allows you to negate the state of the light using an XOR bitwise operation.
-  if(((myMillis() / max(1, duration)) & 1) ^ isInverted){
-    myDigitalWrite(pin, ON);
-  }
-  else{
-    myDigitalWrite(pin, OFF);
-  }
 }
 
 //Blinks each LED on and off in an alternating pattern of 1s
